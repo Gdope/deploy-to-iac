@@ -1,4 +1,4 @@
-name: Hprofile Actions
+name: Stefan-CI
 on: [workflow_dispatch, push]
 jobs:
   Testing:

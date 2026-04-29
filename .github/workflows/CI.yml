@@ -115,11 +115,11 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.APP_PRIVATE_IP }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
 
           proxy_host: ${{ secrets.BASTION_HOST }}
-          proxy_username: ec2-user
+          proxy_username: ubuntu
           proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
           script_stop: true

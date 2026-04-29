@@ -44,6 +44,14 @@ jobs:
       - name: Setup SonarQube
         uses: warchant/setup-sonar-scanner@v8
 
+      - name: Update application.properties file
+        run: |
+          sed -i "s/db01/${{ secrets.RDS_ENDPOINT }}/" src/main/resources/application.properties
+          sed -i "s/^jdbc.username.*$/jdbc.username=${{ secrets.RDS_USER }}/" src/main/resources/application.properties
+          sed -i "s/^jdbc.password.*$/jdbc.password=${{ secrets.RDS_PASS }}/" src/main/resources/application.properties
+          sed -i "s/^memcached.active.host.*$/memcached.active.host=${{ secrets.MEMCACHED_DNS_NAME }}/" src/main/resources/application.properties
+          sed -i "s/^rabbitmq.address.*$/rabbitmq.address=${{ secrets.RABBITMQ_DNS_NAME }}/" src/main/resources/application.properties
+
       - name: Build project
         run: mvn clean package -DskipTests
 

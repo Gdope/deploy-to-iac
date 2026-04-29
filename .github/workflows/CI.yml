@@ -82,7 +82,7 @@ jobs:
           name: sprofile
           path: target/*.war
 
-  Deploy_to_s3:
+  Deploy_and_publish:
     name: Deploy to S3
     runs-on: ubuntu-latest
     needs: sonarqube
@@ -105,3 +105,23 @@ jobs:
       - name: Upload WAR to S3
         run: |
           aws s3 cp artifact/*.war s3://${{ secrets.AWS_BUCKET_NAME }}/builds/vprofile-v2.war
+
+      - name: Deploy to private app instance through Bastion
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.APP_PRIVATE_IP }}
+          username: ec2-user
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          proxy_host: ${{ secrets.BASTION_HOST }}
+          proxy_username: ec2-user
+          proxy_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          script_stop: true
+          script: |
+            aws s3 cp s3://${{ secrets.AWS_BUCKET_NAME }}/builds/vprofile-v2.war /tmp/vprofile-v2.war
+
+            sudo systemctl stop tomcat
+            sudo rm -rf /opt/tomcat/webapps/ROOT /opt/tomcat/webapps/ROOT.war
+            sudo cp /tmp/vprofile-v2.war /opt/tomcat/webapps/ROOT.war
+            sudo systemctl start tomcat

@@ -1,8 +1,8 @@
 name: Stefan-CI
 
 on:
-  - workflow_dispatch
-  - push
+  workflow_dispatch:
+  push:
 
 jobs:
   Testing:
